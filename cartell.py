@@ -1,15 +1,19 @@
 """
-A service to auto login at Cartel Coffee Lab.
+An App to auto login at Cartel Coffee Lab.
 
 Thanks: http://stackoverflow.com/users/113314/ryan
 See: http://stackoverflow.com/questions/4994058/pyobjc-tutorial-without-xcode
 
 """
-import objc
-from Foundation import *
-from AppKit import *
+from AppKit import NSApplication, NSStatusBar, NSBundle,\
+    NSImage, NSMenu, NSMenuItem,\
+    NSLog, NSTimer, NSVariableStatusItemLength
 from PyObjCTools import AppHelper
-import mechanize
+from mechanize import Browser
+
+ICON_BASE = "Coffee Cup Icon Black"
+ICON_EXT = "icns"
+ICON_FILE = ICON_BASE + "." + ICON_EXT
 
 
 class CartellApp(NSApplication):
@@ -21,10 +25,13 @@ class CartellApp(NSApplication):
             NSVariableStatusItemLength)
         # Thanks Matthias Kretschmann
         # at http://kremalicious.com/coffee-cup-icon/
-        icon_path = NSBundle.mainBundle().pathForResource_ofType_("Coffee Cup Icon Black", "icns")
+        icon_path = NSBundle.mainBundle()\
+                            .pathForResource_ofType_(
+                                ICON_BASE, ICON_EXT)
         if not icon_path:
-          icon_path = 'Coffee Cup Icon Black.icns'
-        self.icon = NSImage.alloc().initByReferencingFile_(icon_path)
+            icon_path = ICON_FILE
+        self.icon = NSImage.alloc()\
+                           .initByReferencingFile_(icon_path)
         self.icon.setScalesWhenResized_(True)
         self.icon.setSize_((20, 20))
         self.statusitem.setImage_(self.icon)
@@ -58,7 +65,7 @@ class CartellApp(NSApplication):
 
     def connect_(self, notification):
         NSLog('Connect, damn it.')
-        br = mechanize.Browser()
+        br = Browser()
         br.set_handle_robots(False)
         r = br.open("http://www.apple.com/library/test/success.html")
         content = r.read()
