@@ -21,8 +21,10 @@ class CartellApp(NSApplication):
             NSVariableStatusItemLength)
         # Thanks Matthias Kretschmann
         # at http://kremalicious.com/coffee-cup-icon/
-        self.icon = NSImage.alloc().initByReferencingFile_(
-            'Coffee Cup Icon Black.icns')
+        icon_path = NSBundle.mainBundle().pathForResource_ofType_("Coffee Cup Icon Black", "icns")
+        if not icon_path:
+          icon_path = 'Coffee Cup Icon Black.icns'
+        self.icon = NSImage.alloc().initByReferencingFile_(icon_path)
         self.icon.setScalesWhenResized_(True)
         self.icon.setSize_((20, 20))
         self.statusitem.setImage_(self.icon)
