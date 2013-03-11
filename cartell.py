@@ -45,6 +45,7 @@ class CartellApp(NSApplication):
         # Add menu to statusitem
         self.statusitem.setMenu_(self.menubarMenu)
         self.statusitem.setToolTip_('Cartell')
+        self.statusitem.setHighlightMode_(True)
 
         # Add timer to attempt to auto connect.
         NSTimer\
