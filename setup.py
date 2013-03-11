@@ -2,7 +2,7 @@ from distutils.core import setup
 import py2app
 
 NAME = 'Cartell'
-SCRIPT = 'caretell.py'
+SCRIPT = 'cartell.py'
 VERSION = '0.1'
 ID = 'cartell'
 
@@ -24,6 +24,9 @@ setup(
            'resources':[
                ],
            'excludes':[
+               ],
+           'includes':[
+             'mechanize'
                ]
            }
        }
