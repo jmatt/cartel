@@ -63,6 +63,9 @@ class CartellApp(NSApplication):
                 None,
                 True)
 
+        # Try to connect when the app starts.
+        self.connect_(self)
+
     def connect_(self, notification):
         NSLog('Connect, damn it.')
         br = Browser()
