@@ -27,7 +27,7 @@ class CartellApp(NSApplication):
         self.icon.setSize_((20, 20))
         self.statusitem.setImage_(self.icon)
 
-        #make the menu
+        # Make the menu
         self.menubarMenu = NSMenu.alloc().init()
 
         self.menuItem = NSMenuItem.alloc()\
@@ -40,9 +40,18 @@ class CartellApp(NSApplication):
                                   'Quit', 'terminate:', '')
         self.menubarMenu.addItem_(self.quit)
 
-        #add menu to statusitem
+        # Add menu to statusitem
         self.statusitem.setMenu_(self.menubarMenu)
         self.statusitem.setToolTip_('Cartell')
+
+        # Add timer to attempt to auto connect.
+        NSTimer\
+            .scheduledTimerWithTimeInterval_target_selector_userInfo_repeats_(
+                30,
+                self,
+                'connect:',
+                None,
+                True)
 
     def connect_(self, notification):
         NSLog('Connect, damn it.')
