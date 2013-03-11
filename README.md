@@ -1,7 +1,7 @@
 cartell
 
 
-![coffee](https://github.com/jmatt/cartell/raw/master/Coffee%20Cup%20Icon%20Black.icns)
+![coffee](https://raw.github.com/jmatt/cartell/master/Coffee%20Cup%20Icon%20Black.icns)
 
 
 =======
