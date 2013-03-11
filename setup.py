@@ -29,5 +29,6 @@ setup(
              'mechanize'
                ]
            }
-       }
+       },
+   data_files=['coffee+cup+icon+black.png', 'Coffee Cup Icon Black.icns']
 )
