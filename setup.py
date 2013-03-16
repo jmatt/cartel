@@ -1,10 +1,10 @@
 from distutils.core import setup
 import py2app
 
-NAME = 'Cartell'
-SCRIPT = 'cartell.py'
+NAME = 'Cartel'
+SCRIPT = 'cartel.py'
 VERSION = '0.2'
-ID = 'cartell'
+ID = 'cartel'
 
 plist = dict(
      CFBundleName                = NAME,
