@@ -5,7 +5,7 @@ Authors: J. Matt Peterson
          Craig J. Bishop
 
 
-Source: https://github.com/jmatt/cartell
+Source: https://github.com/jmatt/cartel
 
 Thanks: http://stackoverflow.com/users/113314/ryan
 See: http://stackoverflow.com/questions/4994058/pyobjc-tutorial-without-xcode
