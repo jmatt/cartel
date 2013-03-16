@@ -1,5 +1,5 @@
-cartell
-=======
+cartel
+======
 
 ![coffee](https://raw.github.com/jmatt/cartell/master/coffee+cup+icon+black.png)
 
