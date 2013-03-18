@@ -12,15 +12,22 @@ See: http://stackoverflow.com/questions/4994058/pyobjc-tutorial-without-xcode
 
 """
 import logging
+import socket
 import time
 import urllib2
 
 from AppKit import NSApplication, NSStatusBar, NSBundle,\
     NSImage, NSMenu, NSMenuItem, NSObject,\
     NSLog, NSTimer, NSVariableStatusItemLength,\
-    NSWorkspace, NSWorkspaceDidWakeNotification,\
-    NSWorkspaceDidLaunchApplicationNotification
+    NSWorkspace
+from Foundation import NSNotificationCenter
 from PyObjCTools import AppHelper
+from SystemConfiguration import CFRunLoopGetCurrent, kCFRunLoopCommonModes,\
+    kCFRunLoopDefaultMode, kSCNetworkFlagsInterventionRequired,\
+    SCNetworkReachabilityCreateWithAddress, SCNetworkReachabilityGetFlags,\
+    SCNetworkReachabilityScheduleWithRunLoop,\
+    SCNetworkReachabilityUnscheduleFromRunLoop,\
+    SCNetworkReachabilitySetCallback
 
 from mechanize import Browser
 
@@ -29,39 +36,55 @@ ICON_BASE = "Coffee Cup Icon Black"
 ICON_EXT = "icns"
 ICON_FILE = ICON_BASE + "." + ICON_EXT
 MAX_ATTEMPTS = 3
+kReachabilityChangedNotification = "kNetworkReachabilityChangedNotification"
 
 
-class CNANotificationHandler(NSObject):
+def reachabilityCallback(target, flags, info):
+    NSLog("reachability!")
+    NSLog("flags = %s" % str(flags))
+    NSLog("kSCNetworkFlagsInterventionRequired = %s" % (flags & kSCNetworkFlagsInterventionRequired))
+    default = NSNotificationCenter.defaultCenter()
+    default.postNotificationName_object_(kReachabilityChangedNotification, info)
+
+
+class Reachability(NSObject):
     """
-    Handle Notifications for application launch. Specifically
-    if the bundle identifier is com.apple.CaptiveNetworkAssistant
-    application.
-    """
-
-    app = None
-
-    def handleLaunch_(self, notification):
-        userInfo = notification.valueForKey_("userInfo")
-        bundle_id = userInfo.objectForKey_("NSApplicationBundleIdentifier")
-        # For dev use "com.sublimetext.3" or "org.gnu.Emacs", etc.
-        if bundle_id == "com.apple.CaptiveNetworkAssistant":
-            NSLog("Captive Network Assistant Launch!")
-            self.app.connectAndClose_CNA_(self)
-
-
-class HibernateNotificationHandler(NSObject):
-    """
-    Handle Notifications for sleep and wake events.
+    Handle Notifications from the network.
     """
 
     app = None
 
-    def handleDidWake_(self, notification):
+    def startNotifier(self, callback=reachabilityCallback):
+        inet_addr =  "8.8.8.8"
+        self.loop = CFRunLoopGetCurrent()
+        
+        self.target = SCNetworkReachabilityCreateWithAddress(None, (inet_addr, 80))
+        SCNetworkReachabilitySetCallback(self.target, callback, inet_addr)
+        
+        ok, flags = SCNetworkReachabilityGetFlags(self.target, None)
+
+        if ok:
+            callback(self.target, flags, inet_addr)
+
+        SCNetworkReachabilityScheduleWithRunLoop(
+            self.target,
+            self.loop,
+            kCFRunLoopCommonModes)
+
+    def stopNotifier(self):
+        self.loop = CFRunLoopGetCurrent()
+        SCNetworkReachabilityUnscheduleFromRunLoop(
+            self.target,
+            self.loop,
+            kCFRunLoopDefaultMode)
+
+    def handleChange_(self, notification):
         try:
-            NSLog("wake!")
+            NSLog("change!")
+            NSLog(str(notification))
             self.app.connectAndCloseCNA_(self)
         except:
-            logging.debug("except... wake!")
+            logging.debug("exception... network change!")
 
 
 class CartelApp(NSApplication):
@@ -107,28 +130,17 @@ class CartelApp(NSApplication):
 
         # Wire up hibernate and cna launch events
         self.workspace = NSWorkspace.sharedWorkspace()
-        self.notification_center = self.workspace.notificationCenter()
+        self.default_center = NSNotificationCenter.defaultCenter()
 
-        self.cnahandler = CNANotificationHandler.new()
-        self.cnahandler.app = self
+        self.reachability = Reachability.new()
+        self.reachability.startNotifier()
+        self.reachability.app = self
 
-        self.hibhandler = HibernateNotificationHandler.new()
-        self.hibhandler.app = self
-        
-        self.notification_center.addObserver_selector_name_object_(
-            self.hibhandler,
-            "handleDidWake:",
-            NSWorkspaceDidWakeNotification,
+        self.default_center.addObserver_selector_name_object_(
+            self.reachability,
+            "handleChange:",
+            kReachabilityChangedNotification,
             None)
-
-        self.notification_center.addObserver_selector_name_object_(
-            self.cnahandler,
-            "handleLaunch:",
-            NSWorkspaceDidLaunchApplicationNotification,
-            None)
-
-        # Try to connect when the app starts.
-        self.connectAndCloseCNA_(self)
 
     def connectAndCloseCNA_(self, notification):
         success = self.connect_(notification)
