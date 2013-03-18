@@ -42,6 +42,16 @@ kReachabilityChangedNotification = "kNetworkReachabilityChangedNotification"
 
 
 def reachabilityCallback(target, flags, info):
+    """
+    Default reachabilityCallback.
+
+    Log flags and post notification to the defaultCenter of
+    NSNotificationCenter.
+
+    Note: that if this event is not used
+    then the developer must post notification or the
+    kReachabilityChangedNotification will not happen.
+    """
     NSLog("reachability!")
     NSLog("flags = %s" % str(flags))
     NSLog("kSCNetworkFlagsInterventionRequired = %s" % (flags & kSCNetworkFlagsInterventionRequired))
@@ -51,12 +61,18 @@ def reachabilityCallback(target, flags, info):
 
 class Reachability(NSObject):
     """
-    Handle Notifications from the network.
+    Handle reachability notifications from the network.
     """
 
     app = None
 
     def startNotifier(self, callback=reachabilityCallback):
+        """
+        Start notifications with callback.
+
+        By default use reachabilityCallback which will fire a
+        kReachabilityChangedNotification event using the defined variable.
+        """
         self.loop = CFRunLoopGetCurrent()
         
         self.target = SCNetworkReachabilityCreateWithAddress(None, (INET_ADDR, 80))
@@ -73,6 +89,9 @@ class Reachability(NSObject):
             kCFRunLoopCommonModes)
 
     def stopNotifier(self):
+        """
+        Stop notifications.
+        """
         self.loop = CFRunLoopGetCurrent()
         SCNetworkReachabilityUnscheduleFromRunLoop(
             self.target,
@@ -80,6 +99,9 @@ class Reachability(NSObject):
             kCFRunLoopDefaultMode)
 
     def handleChange_(self, notification):
+        """
+        Handle Reachability changes with the CartelApp.
+        """
         try:
             NSLog("change!")
             NSLog(str(notification))
