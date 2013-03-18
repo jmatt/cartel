@@ -134,7 +134,6 @@ class CartelApp(NSApplication):
         self.default_center = NSNotificationCenter.defaultCenter()
 
         self.reachability = Reachability.new()
-        self.reachability.startNotifier()
         self.reachability.app = self
 
         self.default_center.addObserver_selector_name_object_(
@@ -142,6 +141,8 @@ class CartelApp(NSApplication):
             "handleChange:",
             kReachabilityChangedNotification,
             None)
+
+        self.reachability.startNotifier()
 
     def connectAndCloseCNA_(self, notification):
         success = self.connect_(notification)
