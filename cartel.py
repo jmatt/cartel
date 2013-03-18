@@ -9,7 +9,8 @@ Source: https://github.com/jmatt/cartel
 
 Thanks: http://stackoverflow.com/users/113314/ryan
 See: http://stackoverflow.com/questions/4994058/pyobjc-tutorial-without-xcode
-
+     http://developer.apple.com/library/ios/#samplecode/Reachability/Listings/Classes_Reachability_m.html
+     https://bitbucket.org/wolfg/pyobjc/src/5bc325e5bca4/pyobjc-framework-SystemConfiguration/Examples/CallbackDemo/interneton.py
 """
 import logging
 import socket
