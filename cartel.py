@@ -37,6 +37,7 @@ ICON_BASE = "Coffee Cup Icon Black"
 ICON_EXT = "icns"
 ICON_FILE = ICON_BASE + "." + ICON_EXT
 MAX_ATTEMPTS = 3
+INET_ADDR = "8.8.8.8"
 kReachabilityChangedNotification = "kNetworkReachabilityChangedNotification"
 
 
@@ -56,16 +57,15 @@ class Reachability(NSObject):
     app = None
 
     def startNotifier(self, callback=reachabilityCallback):
-        inet_addr =  "8.8.8.8"
         self.loop = CFRunLoopGetCurrent()
         
-        self.target = SCNetworkReachabilityCreateWithAddress(None, (inet_addr, 80))
-        SCNetworkReachabilitySetCallback(self.target, callback, inet_addr)
+        self.target = SCNetworkReachabilityCreateWithAddress(None, (INET_ADDR, 80))
+        SCNetworkReachabilitySetCallback(self.target, callback, INET_ADDR)
         
         ok, flags = SCNetworkReachabilityGetFlags(self.target, None)
 
         if ok:
-            callback(self.target, flags, inet_addr)
+            callback(self.target, flags, INET_ADDR)
 
         SCNetworkReachabilityScheduleWithRunLoop(
             self.target,
