@@ -3,7 +3,7 @@ import py2app
 
 NAME = 'Cartel'
 SCRIPT = 'cartel.py'
-VERSION = '0.4'
+VERSION = '0.4.2'
 ID = 'cartel'
 
 plist = dict(

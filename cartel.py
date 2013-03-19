@@ -9,8 +9,9 @@ Source: https://github.com/jmatt/cartel
 
 Thanks: http://stackoverflow.com/users/113314/ryan
 See: http://stackoverflow.com/questions/4994058/pyobjc-tutorial-without-xcode
-     http://developer.apple.com/library/ios/#samplecode/Reachability/Listings/Classes_Reachability_m.html
-     https://bitbucket.org/wolfg/pyobjc/src/5bc325e5bca4/pyobjc-framework-SystemConfiguration/Examples/CallbackDemo/interneton.py
+     https://bitbucket.org/wolfg/pyobjc/src/5bc325e5bca4/
+...  pyobjc-framework-SystemConfiguration/Examples/CallbackDemo/interneton.py
+
 """
 import logging
 import socket
@@ -23,80 +24,24 @@ from AppKit import NSApplication, NSStatusBar, NSBundle,\
     NSWorkspace
 from Foundation import NSNotificationCenter
 from PyObjCTools import AppHelper
-from SystemConfiguration import CFRunLoopGetCurrent, kCFRunLoopCommonModes,\
-    kCFRunLoopDefaultMode, kSCNetworkFlagsInterventionRequired,\
-    SCNetworkReachabilityCreateWithAddress, SCNetworkReachabilityGetFlags,\
-    SCNetworkReachabilityScheduleWithRunLoop,\
-    SCNetworkReachabilityUnscheduleFromRunLoop,\
-    SCNetworkReachabilitySetCallback
 
 from mechanize import Browser
 
+from reach.Reachability import Reachability,\
+    kReachabilityChangedNotification
 
 ICON_BASE = "Coffee Cup Icon Black"
 ICON_EXT = "icns"
 ICON_FILE = ICON_BASE + "." + ICON_EXT
 MAX_ATTEMPTS = 3
-INET_ADDR = "8.8.8.8"
-kReachabilityChangedNotification = "kNetworkReachabilityChangedNotification"
 
 
-def reachabilityCallback(target, flags, info):
-    """
-    Default reachabilityCallback.
-
-    Log flags and post notification to the defaultCenter of
-    NSNotificationCenter.
-
-    Note: that if this event is not used
-    then the developer must post notification or the
-    kReachabilityChangedNotification will not happen.
-    """
-    NSLog("reachability!")
-    NSLog("flags = %s" % str(flags))
-    NSLog("kSCNetworkFlagsInterventionRequired = %s" % (flags & kSCNetworkFlagsInterventionRequired))
-    default = NSNotificationCenter.defaultCenter()
-    default.postNotificationName_object_(kReachabilityChangedNotification, info)
-
-
-class Reachability(NSObject):
+class ReachabilityHandler(NSObject):
     """
     Handle reachability notifications from the network.
     """
 
     app = None
-
-    def startNotifier(self, callback=reachabilityCallback):
-        """
-        Start notifications with callback.
-
-        By default use reachabilityCallback which will fire a
-        kReachabilityChangedNotification event using the defined variable.
-        """
-        self.loop = CFRunLoopGetCurrent()
-        
-        self.target = SCNetworkReachabilityCreateWithAddress(None, (INET_ADDR, 80))
-        SCNetworkReachabilitySetCallback(self.target, callback, INET_ADDR)
-        
-        ok, flags = SCNetworkReachabilityGetFlags(self.target, None)
-
-        if ok:
-            callback(self.target, flags, INET_ADDR)
-
-        SCNetworkReachabilityScheduleWithRunLoop(
-            self.target,
-            self.loop,
-            kCFRunLoopCommonModes)
-
-    def stopNotifier(self):
-        """
-        Stop notifications.
-        """
-        self.loop = CFRunLoopGetCurrent()
-        SCNetworkReachabilityUnscheduleFromRunLoop(
-            self.target,
-            self.loop,
-            kCFRunLoopDefaultMode)
 
     def handleChange_(self, notification):
         """
@@ -151,19 +96,22 @@ class CartelApp(NSApplication):
         self.statusitem.setToolTip_('Cartel')
         self.statusitem.setHighlightMode_(True)
 
-        # Wire up hibernate and cna launch events
+        # Get the default notification center.
         self.workspace = NSWorkspace.sharedWorkspace()
         self.default_center = NSNotificationCenter.defaultCenter()
 
-        self.reachability = Reachability.new()
-        self.reachability.app = self
+        # Create the handler
+        self.rhandler = ReachabilityHandler.new()
+        self.rhandler.app = self
 
         self.default_center.addObserver_selector_name_object_(
-            self.reachability,
+            self.rhandler,
             "handleChange:",
             kReachabilityChangedNotification,
             None)
 
+        # Create the reachability object and start notifactions.
+        self.reachability = Reachability()
         self.reachability.startNotifier()
 
     def connectAndCloseCNA_(self, notification):

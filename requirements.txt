@@ -1,3 +1,4 @@
+-e git://github.com/jmatt/reach.git@0a42e1ab3ae3ad1f9580892d1d9e98adc2574fb1#egg=Reach-dev
 altgraph==0.10.2
 distribute==0.6.28
 git-remote-helpers==0.1.0
