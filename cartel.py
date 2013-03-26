@@ -8,7 +8,9 @@ Authors: J. Matt Peterson
 Source: https://github.com/jmatt/cartel
 
 Thanks: http://stackoverflow.com/users/113314/ryan
-See: http://stackoverflow.com/questions/4994058/pyobjc-tutorial-without-xcode
+
+See: https://github.com/jmatt/reach
+     http://stackoverflow.com/questions/4994058/pyobjc-tutorial-without-xcode
      https://bitbucket.org/wolfg/pyobjc/src/5bc325e5bca4/
 ...  pyobjc-framework-SystemConfiguration/Examples/CallbackDemo/interneton.py
 
@@ -33,7 +35,7 @@ from reach.Reachability import Reachability,\
 ICON_BASE = "Coffee Cup Icon Black"
 ICON_EXT = "icns"
 ICON_FILE = ICON_BASE + "." + ICON_EXT
-MAX_ATTEMPTS = 3
+MAX_ATTEMPTS = 12
 
 
 class ReachabilityHandler(NSObject):
@@ -119,6 +121,12 @@ class CartelApp(NSApplication):
         if success:
             self.terminateCNA()
 
+    def wait_increment(self, wait):
+        if wait < 32:
+            return wait * 2
+        else:
+            return 32
+
     def connect_(self, notification):
         """
         Connect to the wifi network.
@@ -129,6 +137,7 @@ class CartelApp(NSApplication):
         """
         NSLog('Connect, damn it.')
         attempts = 0
+        wait = 1
         while attempts < MAX_ATTEMPTS:
             try:
                 attempts += 1
@@ -153,7 +162,8 @@ class CartelApp(NSApplication):
             except urllib2.URLError as e:
                 NSLog("Attempts[%s/%s] Problem trying to connect. %s." 
                     % (attempts, MAX_ATTEMPTS, e.message))
-                time.sleep(1)
+                time.sleep(wait)
+                wait = self.wait_increment(wait)
         return False
 
     def terminateCNA(self):
