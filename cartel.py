@@ -18,7 +18,6 @@ See: https://github.com/jmatt/reach
 import logging
 import socket
 import time
-import urllib2
 
 from AppKit import NSApplication, NSStatusBar, NSBundle,\
     NSImage, NSMenu, NSMenuItem, NSObject,\
@@ -27,7 +26,9 @@ from AppKit import NSApplication, NSStatusBar, NSBundle,\
 from Foundation import NSNotificationCenter
 from PyObjCTools import AppHelper
 
+from httplib import HTTPException
 from mechanize import Browser
+from urllib2 import URLError
 
 from reach.Reachability import Reachability,\
     kReachabilityChangedNotification
@@ -159,7 +160,7 @@ class CartelApp(NSApplication):
                 else:
                     NSLog("Looks like you are already connected.")
                     return True
-            except urllib2.URLError as e:
+            except (HttpException, URLError) as e:
                 NSLog("Attempts[%s/%s] Problem trying to connect. %s." 
                     % (attempts, MAX_ATTEMPTS, e.message))
                 time.sleep(wait)
