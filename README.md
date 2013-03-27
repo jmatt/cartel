@@ -3,7 +3,7 @@ title: Cartel
 description: An App to auto login at Cartel Coffee Lab.
 authors: J. Matt Peterson, Craig J. Bishop
 created:  2013 Mar 10
-modified: 2013 Mar 19
+modified: 2013 Mar 26
 
 ---
 
@@ -17,7 +17,7 @@ Cartel
 Try
 ---
 
-[Check it out now!](http://jmatt.org/cartel/Cartel-0.4.2.dmg)
+[Check it out now!](http://jmatt.org/cartel/Cartel-0.4.3.dmg)
 
 Thanks
 ------
