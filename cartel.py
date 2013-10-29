@@ -160,7 +160,7 @@ class CartelApp(NSApplication):
                 else:
                     NSLog("Looks like you are already connected.")
                     return True
-            except (HttpException, URLError) as e:
+            except (HTTPException, URLError) as e:
                 NSLog("Attempts[%s/%s] Problem trying to connect. %s." 
                     % (attempts, MAX_ATTEMPTS, e.message))
                 time.sleep(wait)
