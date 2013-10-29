@@ -3,7 +3,7 @@ title: Cartel
 description: An App to auto login at Cartel Coffee Lab.
 authors: J. Matt Peterson, Craig J. Bishop
 created:  2013 Mar 10
-modified: 2013 Mar 26
+modified: 2013 Oct 29
 
 ---
 
