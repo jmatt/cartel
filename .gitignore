@@ -36,3 +36,7 @@ nosetests.xml
 
 # Weird OS files
 *.DS_Store
+
+# Deployment files
+Cartel.dmg
+Cartel-*.dmg
