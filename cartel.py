@@ -26,9 +26,8 @@ from AppKit import NSApplication, NSStatusBar, NSBundle,\
 from Foundation import NSNotificationCenter
 from PyObjCTools import AppHelper
 
-from httplib import HTTPException
-from mechanize import Browser
-from urllib2 import URLError
+import requests
+from requests.exceptions import ConnectionError
 
 from reach.Reachability import Reachability,\
     kReachabilityChangedNotification
@@ -37,7 +36,11 @@ ICON_BASE = "Coffee Cup Icon Black"
 ICON_EXT = "icns"
 ICON_FILE = ICON_BASE + "." + ICON_EXT
 MAX_ATTEMPTS = 12
-
+URL = "http://192.168.3.1:8000/?redirurl=http%3A%2F%2Fwww.apple.com%2Ftest%2Ftest%2Fsuccess.html"
+DATA = { "redirurl": "http://www.aplle.com/test/test/success.html",
+         "auth_user": "cartel",
+         "auth_pass": "cartel",
+         "accept": "Continue" }
 
 class ReachabilityHandler(NSObject):
     """
@@ -128,6 +131,25 @@ class CartelApp(NSApplication):
         else:
             return 32
 
+    def try_connect_(self, url=None, data=None):
+        if not url:
+            url = URL
+        if not data:
+            data = DATA
+        try:
+            resp  = requests.post(url,
+                                  data=data,
+                                  allow_redirects=False)
+            if resp.ok:
+                NSLog("Success!")  # connnected.
+                return True
+        except ConnectionError as e:
+            if e.args and len(e.args)\
+               and "www.cartelcoffeelab.com" in e.args[0].message:
+                return True
+            else:
+                raise e
+
     def connect_(self, notification):
         """
         Connect to the wifi network.
@@ -142,25 +164,9 @@ class CartelApp(NSApplication):
         while attempts < MAX_ATTEMPTS:
             try:
                 attempts += 1
-                br = Browser()
-                br.set_handle_robots(False)
-                r = br.open("http://www.apple.com/library/test/success.html")
-                content = r.read()
-                if "Welcome to Cartel Campbell Ave" in content:
-                    NSLog("Trying to connect...")
-                    try:
-                        br.select_form(nr=0)
-                        br.form["auth_pass"] = "cartel"
-                        r = br.submit()
-                        if r.code == 200:
-                            NSLog("Success!")  # connnected.
-                            return True
-                    except Exception as e:
-                        NSLog("Problem trying to connect.")
-                else:
-                    NSLog("Looks like you are already connected.")
+                if self.try_connect_():
                     return True
-            except (HTTPException, URLError) as e:
+            except ConnectionError as e:
                 NSLog("Attempts[%s/%s] Problem trying to connect. %s." 
                     % (attempts, MAX_ATTEMPTS, e.message))
                 time.sleep(wait)

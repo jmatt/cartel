@@ -17,7 +17,7 @@ Cartel
 Try
 ---
 
-[Check it out now!](http://jmatt.org/cartel/Cartel-0.4.4.dmg)
+[Check it out now!](http://jmatt.org/cartel/Cartel-0.5.0.dmg)
 
 Thanks
 ------
