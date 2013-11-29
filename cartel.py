@@ -35,12 +35,13 @@ from reach.Reachability import Reachability,\
 ICON_BASE = "Coffee Cup Icon Black"
 ICON_EXT = "icns"
 ICON_FILE = ICON_BASE + "." + ICON_EXT
-MAX_ATTEMPTS = 12
+MAX_ATTEMPTS = 2
 URL = "http://192.168.3.1:8000/?redirurl=http%3A%2F%2Fwww.apple.com%2Ftest%2Ftest%2Fsuccess.html"
-DATA = { "redirurl": "http://www.aplle.com/test/test/success.html",
-         "auth_user": "cartel",
-         "auth_pass": "cartel",
-         "accept": "Continue" }
+DATA = {"redirurl": "http://www.aplle.com/test/test/success.html",
+        "auth_user": "cartel",
+        "auth_pass": "cartel",
+        "accept": "Continue"}
+
 
 class ReachabilityHandler(NSObject):
     """
@@ -137,7 +138,7 @@ class CartelApp(NSApplication):
         if not data:
             data = DATA
         try:
-            resp  = requests.post(url,
+            resp = requests.post(url,
                                   data=data,
                                   allow_redirects=False)
             if resp.ok:
@@ -167,8 +168,8 @@ class CartelApp(NSApplication):
                 if self.try_connect_():
                     return True
             except ConnectionError as e:
-                NSLog("Attempts[%s/%s] Problem trying to connect. %s." 
-                    % (attempts, MAX_ATTEMPTS, e.message))
+                NSLog("Attempts[%s/%s] Problem trying to connect. %s."
+                      % (attempts, MAX_ATTEMPTS, e.message))
                 time.sleep(wait)
                 wait = self.wait_increment(wait)
         return False

@@ -1,10 +1,13 @@
 -e git://github.com/jmatt/reach.git#egg=Reach-dev
 distribute>=0.6.28
-ipython>=0.13
+setuptools>=1.1.6
+ipython>=1.1.0
+wsgiref>=0.1.2
+altgraph>=0.10.1
 macholib==1.5.1
-mechanize==0.2.5
+requests==2.0.1
 modulegraph==0.10.4
-pep8>=1.4.5
+pep8>=1.4.6
 py2app>=0.7.3
 pyobjc>=2.5.1
 pyobjc-core>=2.5.1
