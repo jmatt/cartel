@@ -139,14 +139,14 @@ class CartelApp(NSApplication):
             data = DATA
         try:
             resp = requests.post(url,
-                                  data=data,
-                                  allow_redirects=False)
+                                 data=data,
+                                 allow_redirects=False)
             if resp.ok:
                 NSLog("Success!")  # connnected.
                 return True
         except ConnectionError as e:
             if e.args and len(e.args)\
-               and "www.cartelcoffeelab.com" in e.args[0].message:
+                and "www.cartelcoffeelab.com" in e.args[0].message:
                 return True
             else:
                 raise e
@@ -168,8 +168,8 @@ class CartelApp(NSApplication):
                 if self.try_connect_():
                     return True
             except ConnectionError as e:
-                NSLog("Attempts[%s/%s] Problem trying to connect. %s."
-                      % (attempts, MAX_ATTEMPTS, e.message))
+                NSLog("Attempts[%i/%i] Problem trying to connect. %s." %
+                      (attempts, MAX_ATTEMPTS, e.message))
                 time.sleep(wait)
                 wait = self.wait_increment(wait)
         return False
