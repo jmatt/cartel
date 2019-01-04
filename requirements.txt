@@ -5,7 +5,7 @@ ipython>=1.1.0
 wsgiref>=0.1.2
 altgraph>=0.10.1
 macholib==1.5.1
-requests==2.0.1
+requests>=2.20.0
 modulegraph==0.10.4
 pep8>=1.4.6
 py2app>=0.7.3
